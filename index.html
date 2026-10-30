@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#6252cc">
+  <meta name="description" content="Психограф — интерактивная лаборатория мотивации. Исследуйте восемь шкал опросника, меняйте профиль и играйте с балансом учёбы, энергии и поддержки.">
+  <title>Психограф — лаборатория мотивации</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="survey.css">
+  <script src="model.js" defer></script>
+  <script src="survey-data.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">К основному содержимому</a>
+  <header class="header shell">
+    <a class="brand" href="#profile" aria-label="Психограф, на главную">
+      <span class="brand-icon" aria-hidden="true"><svg viewBox="0 0 36 36"><path d="M7 24V14m7 15V7m8 22V11m7 13V17"/></svg></span>
+      <span>психограф<span class="brand-caption">лаборатория мотивации</span></span>
+    </a>
+    <nav class="nav" aria-label="Разделы">
+      <button class="nav-button active" data-tab="profile" aria-current="page"><span class="nav-index">01</span> Профиль</button>
+      <button class="nav-button" data-tab="game"><span class="nav-index">02</span> Игра</button>
+      <button class="nav-button" data-tab="method"><span class="nav-index">03</span> Методика</button>
+    </nav>
+    <span class="header-note"><span class="status-dot"></span> Учимся понимать себя</span>
+  </header>
+
+  <main id="main" class="shell">
+    <section id="panel-profile" class="tab-panel" aria-labelledby="profile-heading">
+      <div class="hero" id="profile-hero">
+        <div><p class="eyebrow">ПСИХОЛОГИЯ × МАТЕМАТИКА</p><h1 id="profile-heading">У каждого «хочу»<br>свой <span class="accent-word">рисунок.</span></h1><p class="hero-copy">Ответь на вопросы и увидь свой профиль.<br>Затем исследуй его с помощью бегунков.</p></div>
+        <div class="hero-aside"><span class="mini-orbit" aria-hidden="true"><span></span><i></i><b></b></span><p><strong>32 ответа → 8 шкал</strong><br>Один профиль. Много причин учиться.</p><button class="text-button" data-tab="method">На чём это основано <span aria-hidden="true">↗</span></button></div>
+      </div>
+
+      <div id="survey-entry" class="survey-entry">
+        <div class="survey-entry-copy"><span id="survey-entry-status" class="badge badge-lilac">32 утверждения · 4 коротких шага</span><h2 id="survey-entry-heading">Сначала — твои ответы.</h2><p id="survey-entry-copy">Пройди опрос прямо здесь. Восемь шкал и график рассчитаются автоматически.</p><p class="tiny-note">ШАМ-Ш · для старшеклассников и учащихся колледжей. ФИО не требуется.</p></div>
+        <div class="survey-entry-actions"><button id="survey-start" class="button button-primary">Пройти опрос <span aria-hidden="true">→</span></button><button id="survey-show-result" class="text-button" hidden>Показать мой результат ↗</button><button id="survey-new" class="text-button muted" hidden>Начать новый опрос</button></div>
+      </div>
+
+      <div id="survey-workspace" class="survey-workspace" hidden>
+        <div class="survey-top"><div><span class="eyebrow">ТВОИ ПРИЧИНЫ УЧИТЬСЯ</span><h2 id="survey-heading" tabindex="-1">Опрос учебной мотивации</h2></div><button id="survey-close" class="text-button">Вернуться к профилям</button></div>
+        <div class="survey-progress-head"><span id="survey-step-label">Шаг 1 из 4</span><span id="survey-count" role="status">Ответов: 0 из 32</span></div><progress id="survey-progress" value="0" max="32" aria-label="Заполненные ответы"></progress>
+        <div class="survey-instruction"><h3 id="survey-instruction"></h3><p>Для каждого утверждения выбери, насколько оно соответствует твоим причинам учиться.</p></div>
+        <div id="survey-scale-key" class="survey-scale-key" aria-label="Значения вариантов ответа"></div>
+        <form id="survey-form" novalidate><div id="survey-questions"></div><p id="survey-error" class="form-error" role="alert" hidden></p><div class="survey-nav"><button id="survey-back" class="button button-secondary" type="button">← Назад</button><p id="survey-page-note"></p><button id="survey-next" class="button button-primary" type="submit">Дальше →</button></div></form>
+        <p class="tiny-note">Ответы остаются в памяти этой вкладки до обновления страницы. После завершения их можно сохранить в CSV.</p>
+        <p class="tiny-note" id="survey-attribution"></p>
+      </div>
+
+      <div id="profile-lab">
+      <div class="profile-toolbar">
+        <div class="profile-picker-wrap"><span class="small-label">ВЫБЕРИ ПРОФИЛЬ</span><div id="profile-pills" class="profile-pills" role="group" aria-label="Доступные профили"></div><label id="imported-select-wrap" class="imported-select-wrap" hidden>Загруженный профиль <select id="imported-select"></select></label></div>
+        <button id="open-import" class="button button-secondary"><span aria-hidden="true">↥</span> Свои данные</button>
+      </div>
+
+      <div class="profile-grid">
+        <article class="card chart-card">
+          <div class="card-heading"><div><span id="data-badge" class="badge badge-lilac">Учебные данные</span><h2 id="profile-title">Интерес и усталость</h2></div><div class="segmented" role="group" aria-label="Диапазон вертикальной оси"><button data-unit="raw">1–5</button><button class="selected" data-unit="standard">0–100</button></div></div>
+          <p id="profile-origin" class="origin-note">Вымышленный пример по восьми шкалам ШАМ-Ш.</p>
+          <div class="chart-legend"><span><i class="legend-line original"></i> Исходный профиль</span><span><i class="legend-line experiment"></i> Твой эксперимент</span></div>
+          <div id="profile-chart" class="chart-wrap"></div>
+          <p id="axis-note" class="chart-caption">X — виды мотивации · Y — положение в диапазоне шкалы, 0–100.</p>
+          <div class="chart-insight"><span class="insight-icon" aria-hidden="true">↗</span><div><span class="small-label">ЧТО МЫ ВИДИМ</span><p id="profile-insight"></p></div></div>
+          <div class="chart-actions"><button id="export-experiment" class="text-button">Сохранить эксперимент <span aria-hidden="true">↓</span></button><button id="export-originals" class="text-button muted">Исходные баллы CSV <span aria-hidden="true">↓</span></button></div>
+          <details class="data-details"><summary>Посмотреть точные значения</summary><div class="table-scroll"><table><caption class="visually-hidden">Исходные и экспериментальные баллы ШАМ-Ш</caption><thead><tr><th>Шкала</th><th>Исходный 1–5</th><th>Эксперимент 1–5</th><th>Эксперимент 0–100</th></tr></thead><tbody id="profile-table"></tbody></table></div></details>
+        </article>
+
+        <aside class="card controls-card" aria-labelledby="sliders-heading"><div class="controls-heading"><div><span class="small-label">ПЕСОЧНИЦА</span><h2 id="sliders-heading">А если изменить?</h2></div><span class="sliders-icon" aria-hidden="true">☷</span></div><p class="controls-note">Меняется только эксперимент.<br>Исходные ответы остаются на месте.</p><div id="profile-sliders"></div><button id="reset-profile" class="button button-quiet full-width"><span aria-hidden="true">↺</span> Вернуть исходный профиль</button><p class="tiny-note">У каждой шкалы свой балл. Их не нужно складывать в 100.</p></aside>
+      </div>
+
+      <div id="survey-personal-summary" class="personal-summary card" hidden><div class="card-heading"><div><span class="badge badge-mint">Результат твоих 32 ответов</span><h2>Что описывают твои баллы</h2></div></div><p class="origin-note">Более высокий балл означает большее согласие с утверждениями этой шкалы. Здесь нет общей оценки «хорошо» или «плохо».</p><div id="personal-scale-readings"></div><div class="survey-answer-actions"><button id="survey-edit-answers" class="button button-secondary">Посмотреть мои ответы</button><button id="survey-export-answers" class="text-button">Скачать мои 32 ответа · CSV ↓</button></div><p class="tiny-note">Это результаты исходного опроса. Экспериментальные изменения бегунков в них не входят.</p></div>
+
+      <div class="next-banner"><div class="banner-number" aria-hidden="true">02</div><div><span class="small-label">ОТ ГРАФИКА К РЕШЕНИЮ</span><h3>«Хочу» много. Сил — не очень.</h3><p>Сможешь подготовить героя к зачёту за четыре дня?</p></div><button class="button button-primary" data-tab="game">Сыграть <span aria-hidden="true">→</span></button></div>
+      </div>
+    </section>
+
+    <section id="panel-game" class="tab-panel" aria-labelledby="game-heading" hidden>
+      <div class="hero compact"><div><p class="eyebrow">ЭКСПЕРИМЕНТ НА ЧЕТЫРЕ ДНЯ</p><h1 id="game-heading">Желание есть.<br>А <span class="accent-word">ресурс?</span></h1><p class="hero-copy">Шесть свободных часов в день. Распредели их так,<br>чтобы подготовиться к зачёту и сохранить силы.</p></div><div class="hero-aside game-intro"><span class="badge badge-lilac">Учебная симуляция</span><p>Интерес, энергия и поддержка<br>влияют на результат по правилам игры.</p><button class="text-button" data-tab="method">Посмотреть формулы ↗</button></div></div>
+      <div id="case-picker" class="case-picker" role="group" aria-label="Игровые ситуации"></div>
+      <div class="game-layout">
+        <div class="game-main">
+          <article class="scenario-card"><div class="scenario-top"><span id="case-kicker" class="small-label"></span><span id="day-label" class="badge badge-white"></span></div><h2 id="case-title"></h2><p id="case-story"></p><div class="scenario-bottom"><span id="interest-label"></span><button id="view-case-profile" class="text-button">Открыть профиль ↗</button></div></article>
+          <div id="game-stats" class="stats-grid"></div>
+          <article class="card game-chart-card"><div class="card-heading"><div><span class="small-label">КАЖДЫЙ ДЕНЬ ИМЕЕТ ЗНАЧЕНИЕ</span><h2>Траектория подготовки</h2></div><span class="live-chip"><span class="status-dot"></span> Живой прогноз</span></div><div class="chart-legend"><span><i class="legend-line progress"></i> Подготовка</span><span><i class="legend-line energy"></i> Энергия</span><span><i class="legend-line resource"></i> Ресурсы</span></div><div id="game-chart" class="chart-wrap"></div><p class="chart-caption">Сплошная линия — сыгранные дни. Пунктир — прогноз текущего плана.</p></article>
+        </div>
+        <aside class="card planner-card"><div class="controls-heading"><div><span id="planner-kicker" class="small-label">ПЛАН НА ДЕНЬ 1</span><h2>Куда направим время?</h2></div></div><div class="time-budget"><span><strong id="time-used">6</strong> / 6 часов</span><span id="time-free">Всё распределено</span></div><div id="time-blocks" class="time-blocks" aria-hidden="true"></div>
+          <div class="plan-control"><div class="plan-label"><label for="plan-study"><span class="plan-dot study"></span> Учёба</label><output id="plan-study-value" for="plan-study">2 ч</output></div><input id="plan-study" class="range purple-range" type="range" min="0" max="6" step="1" value="2"><p>Двигает проект, расходует силы.</p></div>
+          <div class="plan-control"><div class="plan-label"><label for="plan-rest"><span class="plan-dot rest"></span> Восстановление</label><output id="plan-rest-value" for="plan-rest">2 ч</output></div><input id="plan-rest" class="range green-range" type="range" min="0" max="6" step="1" value="2"><p>Пополняет энергию.</p></div>
+          <div class="plan-control"><div class="plan-label"><label for="plan-support"><span class="plan-dot support"></span> Поддержка и план</label><output id="plan-support-value" for="plan-support">2 ч</output></div><input id="plan-support" class="range orange-range" type="range" min="0" max="6" step="1" value="2"><p>Добавляет помощь и ясность задачи.</p></div>
+          <p class="tiny-note">Если часов не хватает, убавь другой бегунок. Свободные часы не дают бонусов в этой модели.</p><div id="day-preview" class="day-preview" aria-live="polite"></div><button id="advance-day" class="button button-primary full-width">Прожить день <span aria-hidden="true">→</span></button><button id="reset-game" class="text-button reset-game">↺ Начать ситуацию заново</button><div id="game-goal" class="goal-box"></div>
+        </aside>
+      </div>
+      <div id="game-result" class="card game-result" hidden aria-live="polite"></div>
+      <details class="day-log"><summary>Дневник решений</summary><div id="game-log"></div></details>
+      <p class="section-note">Энергия, ресурсы и прирост подготовки — условные игровые величины. ШАМ-Ш измеряет мотивы учёбы, а не запас сил.</p>
+    </section>
+
+    <section id="panel-method" class="tab-panel" aria-labelledby="method-heading" hidden>
+      <div class="hero compact"><div><p class="eyebrow">МЕНЬШЕ МАГИИ, БОЛЬШЕ СМЫСЛА</p><h1 id="method-heading">Что стоит<br>за <span class="accent-word">бегунками.</span></h1><p class="hero-copy">Результаты опросника, математическое отображение<br>и правила игры — у каждого своя роль.</p></div><div class="hero-aside"><span class="method-symbol" aria-hidden="true">ƒ(x)</span></div></div>
+      <div class="method-grid"><article class="card method-card wide"><span class="badge badge-lilac">01 · Опросник</span><h2>ШАМ-Ш: восемь причин учиться</h2><p>«Шкалы академической мотивации школьников» — методика Т. О. Гордеевой, О. А. Сычева, В. В. Гижицкого и Т. К. Гавриченковой (2017). В ней 32 утверждения: по четыре для каждой из восьми шкал. Ответы оцениваются от 1 до 5.</p><p>Методика исследована на старшеклассниках и учащихся колледжей. Здесь она служит учебным примером измерения мотивации; автоматически переносить её нормы на взрослых сотрудников нельзя.</p><div id="scale-reference" class="scale-reference"></div><a class="text-button" href="https://psyjournals.ru/journals/pse/archive/2017_n2/Gordeeva_et_al" target="_blank" rel="noopener noreferrer">Статья авторов · DOI 10.17759/pse.2017220206 ↗</a><p class="tiny-note">Первоисточник опубликован под CC BY-NC 4.0. Утверждения из предоставленного бланка доступны в разделе «Профиль».</p></article>
+      <article class="card method-card"><span class="badge badge-peach">А тот самый большой HR-тест?</span><h2>16PF Кеттелла</h2><div class="big-number">185 <span>вопросов</span></div><p>Пятая редакция 16PF даёт профиль личностных черт и применяется, в том числе, в профессиональном консультировании и подборе персонала.</p><p>Он не выдаёт готовую тройку «энергия — ресурсы — мотивация». Поэтому для графика здесь используется ШАМ-Ш из учебных материалов.</p><a class="text-button" href="https://www.pearsonassessments.com/en-us/Store/Professional-Assessments/Personality-%26-Biopsychosocial/Sixteen-Personality-Factor-Questionnaire-%7C-Fifth-Edition/p/100000483" target="_blank" rel="noopener noreferrer">Описание у издателя Pearson ↗</a></article>
+      <article class="card method-card"><span class="badge badge-mint">02 · Математика</span><h2>От ответов к точке графика</h2><p>Для каждой шкалы считаем среднее четырёх ответов:</p><div class="formula">m = (x₁ + x₂ + x₃ + x₄) / 4</div><p>Например: (4 + 5 + 4 + 5) / 4 = <strong>4,5</strong>. Среднее лежит между 1 и 5. Диапазон 4–20 относится к сумме.</p><div class="formula">y = 25 × (m − 1)</div><p>Так 4,5 превращается в <strong>87,5 из 100</strong>. Это положение в диапазоне шкалы, а не процент мотивации, не процентиль и не сравнение с нормой.</p><p class="tiny-note">Бегунки задают условный профиль. При расчёте по четырём целым ответам средний балл меняется с шагом 0,25.</p></article>
+      <article class="card method-card"><span class="badge badge-lilac">03 · Чтение графика</span><h2>Восемь шкал ≠ одна оценка</h2><p>По горизонтали расположены категории мотивации, по вертикали — их баллы. Линия соединяет категории, а не точки во времени.</p><p>Интерес к предмету может сосуществовать с чувством долга и желанием заслужить одобрение. Шкалы не обязаны давать в сумме 100; амотивация не равна «100 минус интерес».</p><p>Серый пунктир сохраняет исходные значения. Цветная линия — мысленный эксперимент. Перемещение бегунка не доказывает, что какое-либо действие вызовет такой эффект в жизни.</p><div class="soft-callout">Задача лаборатории — научиться читать данные и обсуждать гипотезы. Профиль не является диагнозом или решением о найме.</div></article>
+      <article class="card method-card wide"><span class="badge badge-peach">04 · Правила симуляции</span><h2>Почему в игре одного желания мало</h2><p>Каждый день доступны 6 часов. Учёба увеличивает подготовку, восстановление пополняет энергию, поддержка добавляет ресурсы. «Интерес» берётся только из познавательной шкалы выбранного вымышленного профиля. Это не суммарная мотивация.</p><div class="formula-list"><code>Δподготовка = учёба × (0,6 + 0,4 × интерес / 100)<br>× (2 + 0,04 × энергия + 0,02 × ресурсы)</code><code>Энергия′ = энергия + 8 × отдых + 2 × поддержка − 7 × учёба</code><code>Ресурсы′ = ресурсы + 10 × поддержка − 2 × учёба</code></div><p>Расчёт подготовки использует энергию и ресурсы <strong>на начало дня</strong>. Все игровые показатели ограничены диапазоном 0–100. Победа: выполнить цель ситуации за 4 дня, сохранив не менее 20 энергии и 15 ресурсов.</p><div class="soft-callout">Коэффициенты придуманы для игры. Они не оценены по исследованию и не предсказывают эффект отдыха, поддержки или обучения у реального человека.</div></article>
+      <article class="card method-card"><span class="badge badge-mint">05 · Свои респонденты</span><h2>Как добавить результаты</h2><p>В разделе «Профиль» нажми «Свои данные». Можно загрузить CSV с 32 ответами либо с 8 уже рассчитанными средними. Используй анонимные коды вместо имён.</p><p>Приложение проверяет диапазоны, пропуски и повторяющиеся коды. Нулевой или отсутствующий ответ не превращается в низкую мотивацию.</p><p>Загруженный CSV обрабатывается в памяти браузера и исчезает после перезагрузки. Приложение не отправляет его на сервер.</p><a class="text-button" href="data/template-answers.csv" download>Шаблон для 32 ответов ↓</a><br><a class="text-button" href="data/demo-scores.csv" download>Пример восьми средних ↓</a></article></div>
+      <div class="defense-box"><span class="small-label">ИДЕЯ ДЛЯ ОБСУЖДЕНИЯ НА ЗАНЯТИИ</span><h3>«Если человек очень хочет, почему результата может не быть?»</h3><p>Сначала покажи профиль, затем пройди ситуацию «Хочу, но не вывожу». Сравни план «только учёба» с планом, в котором есть восстановление и поддержка. Обсудите, какие выводы следуют из данных, а какие — лишь из заданных правил модели.</p></div>
+    </section>
+  </main>
+
+  <footer class="footer shell"><span>психограф <span class="footer-cross">×</span> психология через математику</span><span>Учебная лаборатория · версия 1.0</span></footer>
+
+  <dialog id="import-dialog" aria-labelledby="import-heading"><div class="dialog-top"><div><span class="small-label">ОТ СВОИХ ОТВЕТОВ К ГРАФИКУ</span><h2 id="import-heading">Добавить результаты</h2></div><button id="close-import" class="icon-button" aria-label="Закрыть окно">×</button></div><p>CSV с анонимными кодами и 32 ответами (1–5) или восемью средними (1–5). Вся обработка происходит в этом браузере.</p><label class="file-drop" for="csv-file"><span aria-hidden="true">↥</span><strong>Выбрать CSV-файл</strong><span>до 1 МБ · до 1000 респондентов</span><input type="file" id="csv-file" accept=".csv,text/csv,text/plain"></label><p class="small-label paste-label">ИЛИ ВСТАВЬ ТАБЛИЦУ</p><label class="visually-hidden" for="csv-text">Данные в формате CSV</label><textarea id="csv-text" rows="5" spellcheck="false" placeholder="id;source;curiosity;achievement;growth;selfRespect;guilt;approval;avoidance;amotivation&#10;R01;respondent;4.5;4;4.25;3;2;2.5;1.5;1"></textarea><p id="import-error" class="form-error" role="alert" hidden></p><div class="dialog-actions"><button id="parse-csv" class="button button-primary">Построить профили →</button><button id="clear-imported" class="button button-quiet" hidden>Удалить загруженные</button></div><div class="import-downloads"><a href="data/template-answers.csv" download>Шаблон ответов ↓</a><a href="data/demo-scores.csv" download>Демонстрационный CSV ↓</a></div><p class="tiny-note">Пример в поле — только подсказка. Для учебных данных указывай source=synthetic, для собранных ответов — source=respondent. Не включай личные данные в файлы, которые публикуешь на сайте.</p></dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  <noscript><div class="noscript">Для бегунков и игры включи JavaScript в браузере.</div></noscript>
+</body>
+</html>
